@@ -1,5 +1,5 @@
 import { newConnection } from '@hellocacbantre/db-schemas'
-import { Env } from '../../config'
+import { Env } from '../env'
 
 const { URI, OPTIONS } = Env.MONGO_CONNECTION
 
