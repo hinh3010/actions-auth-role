@@ -1,23 +1,9 @@
-import Bluebird from 'bluebird'
-import { falcol } from '../connections/redisio.db'
+import { type Context } from './../@types/interfaces'
+import { SimpleFalcon } from '@hellocacbantre/redis'
 
-export const getJwtSetting = async () => {
-  const [
-    ACCESS_TOKEN_SECRET,
-    ACCESS_TOKEN_EXPIRES,
-    REFRESH_TOKEN_EXPIRES,
-    REFRESH_TOKEN_SECRET
-  ]: any = await Bluebird.all([
-    falcol.get('global_setting:jwt_access_token_secret'),
-    falcol.get('global_setting:jwt_access_token_expires'),
-    falcol.get('global_setting:jwt_refresh_token_expires'),
-    falcol.get('global_setting:jwt_refresh_token_secret')
-  ])
-
-  return {
-    ACCESS_TOKEN_SECRET,
-    ACCESS_TOKEN_EXPIRES,
-    REFRESH_TOKEN_EXPIRES,
-    REFRESH_TOKEN_SECRET
+export const getJwtSetting = (context: Context) => {
+  const falcol = new SimpleFalcon(context.redisDb)
+  return async (key: string): Promise<string> => {
+    return (await falcol.get(`global_setting:${key}`)) ?? ''
   }
 }

@@ -1,9 +1,14 @@
 import express from 'express'
-import { AuthRole } from '../simple'
+import { AuthRole } from '..'
 import { type IError } from '../@types'
+import { platformDb } from './connections/mongo.db'
+import { RedisIoClient } from './connections/redisio.db'
 
 const app = express()
-const authRole = new AuthRole()
+const authRole = new AuthRole({
+  mongodb: platformDb,
+  redisDb: RedisIoClient
+})
 
 const handlerError = (err: IError, _: any, res: any, __: any) => {
   return res.json({

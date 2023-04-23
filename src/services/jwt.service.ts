@@ -1,42 +1,37 @@
-import { getJwtSetting } from './../config'
-import CryptoJS from 'crypto-js'
+import Bluebird from 'bluebird'
 import Jwt, { type JwtPayload, type SignOptions } from 'jsonwebtoken'
 import { type ObjectId } from 'mongoose'
+import { getJwtSetting } from './../config'
+import { type Context } from '../@types'
 
-const privateKey = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex)
-const publicKey = CryptoJS.SHA256(privateKey).toString()
-console.log(publicKey)
+// import CryptoJS from 'crypto-js'
+// const privateKey = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex)
+// const publicKey = CryptoJS.SHA256(privateKey).toString()
+// console.log(publicKey)
 
 export interface IPayload extends JwtPayload {
   _id: ObjectId
 }
 
 export class JwtService {
-  async generateAccessToken(payload: IPayload): Promise<string | unknown> {
-    const setting = await getJwtSetting()
-    return new Promise((resolve, reject) => {
-      const serret = setting.ACCESS_TOKEN_SECRET
-      const options: SignOptions = {
-        expiresIn: setting.ACCESS_TOKEN_EXPIRES,
-        algorithm: 'HS256',
-        subject: 'authentication'
-      }
-      Jwt.sign(payload, serret, options, (err, token) => {
-        if (err) reject(err)
-        resolve(token)
-      })
-    })
+  private readonly context: Context
+
+  constructor(context: Context) {
+    this.context = context
   }
 
-  async generateRefreshToken(payload: IPayload): Promise<string | unknown> {
-    const setting = await getJwtSetting()
+  public async generateAccessToken(payload: IPayload): Promise<string | unknown> {
+    const [serret, expires] = await Bluebird.all([
+      getJwtSetting(this.context)('jwt_access_token_secret'),
+      getJwtSetting(this.context)('jwt_access_token_expires')
+    ])
 
-    const serret = setting.REFRESH_TOKEN_SECRET
     const options: SignOptions = {
-      expiresIn: setting.REFRESH_TOKEN_EXPIRES,
+      expiresIn: expires,
       algorithm: 'HS256',
       subject: 'authentication'
     }
+
     try {
       return Jwt.sign(payload, serret, options)
     } catch (error: any) {
@@ -44,13 +39,32 @@ export class JwtService {
     }
   }
 
-  async verifyAccessToken(token: string) {
-    const setting = await getJwtSetting()
-    return Jwt.verify(token, setting.ACCESS_TOKEN_SECRET)
+  public async generateRefreshToken(payload: IPayload): Promise<string | unknown> {
+    const [serret, expires] = await Bluebird.all([
+      getJwtSetting(this.context)('jwt_refresh_token_secret'),
+      getJwtSetting(this.context)('jwt_refresh_token_expires')
+    ])
+
+    const options: SignOptions = {
+      expiresIn: expires,
+      algorithm: 'HS256',
+      subject: 'authentication'
+    }
+
+    try {
+      return Jwt.sign(payload, serret, options)
+    } catch (error: any) {
+      throw new Error(error)
+    }
   }
 
-  async verifyRefreshToken(refreshToken: string) {
-    const setting = await getJwtSetting()
-    return Jwt.verify(refreshToken, setting.REFRESH_TOKEN_SECRET)
+  public async verifyAccessToken(token: string) {
+    const serret = await getJwtSetting(this.context)('jwt_access_token_secret')
+    return Jwt.verify(token, serret)
+  }
+
+  public async verifyRefreshToken(refreshToken: string) {
+    const serret = await getJwtSetting(this.context)('jwt_refresh_token_secret')
+    return Jwt.verify(refreshToken, serret)
   }
 }
