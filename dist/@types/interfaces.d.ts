@@ -5,10 +5,10 @@ export interface IError {
     status: number;
     message: string;
 }
-export interface CustomRequest extends Request {
+export interface ICustomRequest extends Request {
     user?: Record<string, any>;
 }
-export interface Context {
+export interface IContext {
     mongodb: Connection;
     redisDb: Redis;
 }

@@ -2,7 +2,7 @@ import Bluebird from 'bluebird'
 import Jwt, { type JwtPayload, type SignOptions } from 'jsonwebtoken'
 import { type ObjectId } from 'mongoose'
 import { getJwtSetting } from './../config'
-import { type Context } from '../@types'
+import { type IContext } from '../@types'
 
 // import CryptoJS from 'crypto-js'
 // const privateKey = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex)
@@ -14,14 +14,14 @@ export interface IPayload extends JwtPayload {
 }
 
 export class JwtService {
-  private readonly context: Context
+  private readonly context: IContext
 
-  constructor(context: Context) {
+  constructor(context: IContext) {
     this.context = context
   }
 
   public async generateAccessToken(payload: IPayload): Promise<string | unknown> {
-    const [serret, expires] = await Bluebird.all([
+    const [secret, expires] = await Bluebird.all([
       getJwtSetting(this.context)('jwt_access_token_secret'),
       getJwtSetting(this.context)('jwt_access_token_expires')
     ])
@@ -33,14 +33,14 @@ export class JwtService {
     }
 
     try {
-      return Jwt.sign(payload, serret, options)
+      return Jwt.sign(payload, secret, options)
     } catch (error: any) {
       throw new Error(error)
     }
   }
 
   public async generateRefreshToken(payload: IPayload): Promise<string | unknown> {
-    const [serret, expires] = await Bluebird.all([
+    const [secret, expires] = await Bluebird.all([
       getJwtSetting(this.context)('jwt_refresh_token_secret'),
       getJwtSetting(this.context)('jwt_refresh_token_expires')
     ])
@@ -52,19 +52,19 @@ export class JwtService {
     }
 
     try {
-      return Jwt.sign(payload, serret, options)
+      return Jwt.sign(payload, secret, options)
     } catch (error: any) {
       throw new Error(error)
     }
   }
 
   public async verifyAccessToken(token: string) {
-    const serret = await getJwtSetting(this.context)('jwt_access_token_secret')
-    return Jwt.verify(token, serret)
+    const secret = await getJwtSetting(this.context)('jwt_access_token_secret')
+    return Jwt.verify(token, secret)
   }
 
   public async verifyRefreshToken(refreshToken: string) {
-    const serret = await getJwtSetting(this.context)('jwt_refresh_token_secret')
-    return Jwt.verify(refreshToken, serret)
+    const secret = await getJwtSetting(this.context)('jwt_refresh_token_secret')
+    return Jwt.verify(refreshToken, secret)
   }
 }

@@ -22,7 +22,7 @@ class JwtService {
     }
     generateAccessToken(payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            const [serret, expires] = yield bluebird_1.default.all([
+            const [secret, expires] = yield bluebird_1.default.all([
                 (0, config_1.getJwtSetting)(this.context)('jwt_access_token_secret'),
                 (0, config_1.getJwtSetting)(this.context)('jwt_access_token_expires')
             ]);
@@ -32,7 +32,7 @@ class JwtService {
                 subject: 'authentication'
             };
             try {
-                return jsonwebtoken_1.default.sign(payload, serret, options);
+                return jsonwebtoken_1.default.sign(payload, secret, options);
             }
             catch (error) {
                 throw new Error(error);
@@ -41,7 +41,7 @@ class JwtService {
     }
     generateRefreshToken(payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            const [serret, expires] = yield bluebird_1.default.all([
+            const [secret, expires] = yield bluebird_1.default.all([
                 (0, config_1.getJwtSetting)(this.context)('jwt_refresh_token_secret'),
                 (0, config_1.getJwtSetting)(this.context)('jwt_refresh_token_expires')
             ]);
@@ -51,7 +51,7 @@ class JwtService {
                 subject: 'authentication'
             };
             try {
-                return jsonwebtoken_1.default.sign(payload, serret, options);
+                return jsonwebtoken_1.default.sign(payload, secret, options);
             }
             catch (error) {
                 throw new Error(error);
@@ -60,14 +60,14 @@ class JwtService {
     }
     verifyAccessToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const serret = yield (0, config_1.getJwtSetting)(this.context)('jwt_access_token_secret');
-            return jsonwebtoken_1.default.verify(token, serret);
+            const secret = yield (0, config_1.getJwtSetting)(this.context)('jwt_access_token_secret');
+            return jsonwebtoken_1.default.verify(token, secret);
         });
     }
     verifyRefreshToken(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
-            const serret = yield (0, config_1.getJwtSetting)(this.context)('jwt_refresh_token_secret');
-            return jsonwebtoken_1.default.verify(refreshToken, serret);
+            const secret = yield (0, config_1.getJwtSetting)(this.context)('jwt_refresh_token_secret');
+            return jsonwebtoken_1.default.verify(refreshToken, secret);
         });
     }
 }
