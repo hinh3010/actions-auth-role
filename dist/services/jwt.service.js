@@ -18,10 +18,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("./../config");
 class JwtService {
     constructor(context) {
-        this.context = context;
-    }
-    generateAccessToken(payload) {
-        return __awaiter(this, void 0, void 0, function* () {
+        this.generateAccessToken = (payload) => __awaiter(this, void 0, void 0, function* () {
             const [secret, expires] = yield bluebird_1.default.all([
                 (0, config_1.getJwtSetting)(this.context)('jwt_access_token_secret'),
                 (0, config_1.getJwtSetting)(this.context)('jwt_access_token_expires')
@@ -38,9 +35,7 @@ class JwtService {
                 throw new Error(error);
             }
         });
-    }
-    generateRefreshToken(payload) {
-        return __awaiter(this, void 0, void 0, function* () {
+        this.generateRefreshToken = (payload) => __awaiter(this, void 0, void 0, function* () {
             const [secret, expires] = yield bluebird_1.default.all([
                 (0, config_1.getJwtSetting)(this.context)('jwt_refresh_token_secret'),
                 (0, config_1.getJwtSetting)(this.context)('jwt_refresh_token_expires')
@@ -57,18 +52,15 @@ class JwtService {
                 throw new Error(error);
             }
         });
-    }
-    verifyAccessToken(token) {
-        return __awaiter(this, void 0, void 0, function* () {
+        this.verifyAccessToken = (token) => __awaiter(this, void 0, void 0, function* () {
             const secret = yield (0, config_1.getJwtSetting)(this.context)('jwt_access_token_secret');
             return jsonwebtoken_1.default.verify(token, secret);
         });
-    }
-    verifyRefreshToken(refreshToken) {
-        return __awaiter(this, void 0, void 0, function* () {
+        this.verifyRefreshToken = (refreshToken) => __awaiter(this, void 0, void 0, function* () {
             const secret = yield (0, config_1.getJwtSetting)(this.context)('jwt_refresh_token_secret');
             return jsonwebtoken_1.default.verify(refreshToken, secret);
         });
+        this.context = context;
     }
 }
 exports.JwtService = JwtService;

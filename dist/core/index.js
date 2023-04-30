@@ -20,37 +20,7 @@ const http_errors_1 = __importDefault(require("http-errors"));
 const jwt_service_1 = require("../services/jwt.service");
 class AuthRole {
     constructor(context) {
-        this.checkRole = (role) => {
-            return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-                const { authorization } = req.headers;
-                if (authorization) {
-                    const token = authorization.split(' ')[1];
-                    if (!token) {
-                        return next(http_errors_1.default.Unauthorized());
-                    }
-                    const decoded = yield this.jwtService.verifyAccessToken(token);
-                    const { mongodb } = this.context;
-                    const { getModel } = (0, db_schemas_1.createConnect)(mongodb);
-                    const User = getModel('User');
-                    const user = yield User.findById(decoded._id).lean();
-                    const { roles = [] } = user;
-                    if (user.status !== 'active') {
-                        return next(http_errors_1.default.Forbidden('Your account has not been activated'));
-                    }
-                    if (!roles.includes(role)) {
-                        return next(http_errors_1.default.Forbidden('You do not have permission'));
-                    }
-                    req.user = user;
-                    return next();
-                }
-                return next(http_errors_1.default.Unauthorized());
-            });
-        };
-        this.context = context;
-        this.jwtService = new jwt_service_1.JwtService(context);
-    }
-    refetchToken(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
+        this.refetchToken = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const refreshToken = req.cookies.refreshToken;
                 const decodedRefreshToken = yield this.jwtService.verifyRefreshToken(refreshToken);
@@ -83,9 +53,7 @@ class AuthRole {
                 return false;
             }
         });
-    }
-    isUser(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
+        this.isUser = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const { authorization } = req.headers;
             if (authorization) {
                 const token = authorization.split(' ')[1];
@@ -112,9 +80,33 @@ class AuthRole {
             }
             return next(http_errors_1.default.Unauthorized());
         });
-    }
-    isUserActive(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
+        this.checkRole = (role) => {
+            return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+                const { authorization } = req.headers;
+                if (authorization) {
+                    const token = authorization.split(' ')[1];
+                    if (!token) {
+                        return next(http_errors_1.default.Unauthorized());
+                    }
+                    const decoded = yield this.jwtService.verifyAccessToken(token);
+                    const { mongodb } = this.context;
+                    const { getModel } = (0, db_schemas_1.createConnect)(mongodb);
+                    const User = getModel('User');
+                    const user = yield User.findById(decoded._id).lean();
+                    const { roles = [] } = user;
+                    if (user.status !== 'active') {
+                        return next(http_errors_1.default.Forbidden('Your account has not been activated'));
+                    }
+                    if (!roles.includes(role)) {
+                        return next(http_errors_1.default.Forbidden('You do not have permission'));
+                    }
+                    req.user = user;
+                    return next();
+                }
+                return next(http_errors_1.default.Unauthorized());
+            });
+        };
+        this.isUserActive = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const { authorization } = req.headers;
             if (authorization) {
                 const token = authorization.split(' ')[1];
@@ -131,9 +123,7 @@ class AuthRole {
             }
             return next(http_errors_1.default.Unauthorized());
         });
-    }
-    isAdmin(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
+        this.isAdmin = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const { authorization } = req.headers;
             if (authorization) {
                 const token = authorization.split(' ')[1];
@@ -157,9 +147,7 @@ class AuthRole {
             }
             return next(http_errors_1.default.Unauthorized());
         });
-    }
-    isSuperAdmin(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
+        this.isSuperAdmin = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const { authorization } = req.headers;
             if (authorization) {
                 const token = authorization.split(' ')[1];
@@ -183,6 +171,8 @@ class AuthRole {
             }
             return next(http_errors_1.default.Unauthorized());
         });
+        this.context = context;
+        this.jwtService = new jwt_service_1.JwtService(context);
     }
 }
 exports.AuthRole = AuthRole;

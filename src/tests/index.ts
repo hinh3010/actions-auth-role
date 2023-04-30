@@ -17,9 +17,14 @@ const handlerError = (err: IError, _: any, res: any, __: any) => {
   })
 }
 
-app.get('/', authRole.isUser, (req, res) => {
-  res.send('Xin chào, đây là trang chủ!')
-})
+app.get(
+  '/',
+  // authRole.checkRole(ACCOUNT_ROLES_TYPE.User),
+  authRole.isUser,
+  (req, res) => {
+    res.send('Xin chào, đây là trang chủ!')
+  }
+)
 
 app.use(handlerError)
 

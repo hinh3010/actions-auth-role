@@ -15,7 +15,7 @@ export class AuthRole {
     this.jwtService = new JwtService(context)
   }
 
-  private async refetchToken(req: ICustomRequest, res: Response): Promise<boolean> {
+  private readonly refetchToken = async (req: ICustomRequest, res: Response): Promise<boolean> => {
     try {
       const refreshToken = req.cookies.refreshToken
 
@@ -55,7 +55,7 @@ export class AuthRole {
     }
   }
 
-  public async isUser(req: ICustomRequest, res: Response, next: NextFunction) {
+  public isUser = async (req: ICustomRequest, res: Response, next: NextFunction) => {
     const { authorization } = req.headers
     if (authorization) {
       const token = authorization.split(' ')[1]
@@ -86,7 +86,7 @@ export class AuthRole {
     return next(createError.Unauthorized())
   }
 
-  checkRole = (role: ACCOUNT_ROLES_TYPE) => {
+  public checkRole = (role: ACCOUNT_ROLES_TYPE) => {
     return async (req: ICustomRequest, res: Response, next: NextFunction) => {
       const { authorization } = req.headers
       if (authorization) {
@@ -118,7 +118,7 @@ export class AuthRole {
     }
   }
 
-  public async isUserActive(req: ICustomRequest, res: Response, next: NextFunction) {
+  public isUserActive = async (req: ICustomRequest, res: Response, next: NextFunction) => {
     const { authorization } = req.headers
     if (authorization) {
       const token = authorization.split(' ')[1]
@@ -140,7 +140,7 @@ export class AuthRole {
     return next(createError.Unauthorized())
   }
 
-  public async isAdmin(req: ICustomRequest, res: Response, next: NextFunction) {
+  public isAdmin = async (req: ICustomRequest, res: Response, next: NextFunction) => {
     const { authorization } = req.headers
     if (authorization) {
       const token = authorization.split(' ')[1]
@@ -172,7 +172,7 @@ export class AuthRole {
     return next(createError.Unauthorized())
   }
 
-  public async isSuperAdmin(req: ICustomRequest, res: Response, next: NextFunction) {
+  public isSuperAdmin = async (req: ICustomRequest, res: Response, next: NextFunction) => {
     const { authorization } = req.headers
     if (authorization) {
       const token = authorization.split(' ')[1]

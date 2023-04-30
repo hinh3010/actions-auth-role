@@ -19,7 +19,9 @@ const handlerError = (err, _, res, __) => {
         message: err.message
     });
 };
-app.get('/', authRole.isUser, (req, res) => {
+app.get('/', 
+// authRole.checkRole(ACCOUNT_ROLES_TYPE.User),
+authRole.isUser, (req, res) => {
     res.send('Xin chào, đây là trang chủ!');
 });
 app.use(handlerError);

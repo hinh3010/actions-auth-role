@@ -7,8 +7,8 @@ export interface IPayload extends JwtPayload {
 export declare class JwtService {
     private readonly context;
     constructor(context: IContext);
-    generateAccessToken(payload: IPayload): Promise<string | unknown>;
-    generateRefreshToken(payload: IPayload): Promise<string | unknown>;
-    verifyAccessToken(token: string): Promise<string | Jwt.JwtPayload>;
-    verifyRefreshToken(refreshToken: string): Promise<string | Jwt.JwtPayload>;
+    generateAccessToken: (payload: IPayload) => Promise<string | unknown>;
+    generateRefreshToken: (payload: IPayload) => Promise<string | unknown>;
+    verifyAccessToken: (token: string) => Promise<string | Jwt.JwtPayload>;
+    verifyRefreshToken: (refreshToken: string) => Promise<string | Jwt.JwtPayload>;
 }

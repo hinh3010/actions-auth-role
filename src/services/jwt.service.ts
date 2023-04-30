@@ -20,7 +20,7 @@ export class JwtService {
     this.context = context
   }
 
-  public async generateAccessToken(payload: IPayload): Promise<string | unknown> {
+  public generateAccessToken = async (payload: IPayload): Promise<string | unknown> => {
     const [secret, expires] = await Bluebird.all([
       getJwtSetting(this.context)('jwt_access_token_secret'),
       getJwtSetting(this.context)('jwt_access_token_expires')
@@ -39,7 +39,7 @@ export class JwtService {
     }
   }
 
-  public async generateRefreshToken(payload: IPayload): Promise<string | unknown> {
+  public generateRefreshToken = async (payload: IPayload): Promise<string | unknown> => {
     const [secret, expires] = await Bluebird.all([
       getJwtSetting(this.context)('jwt_refresh_token_secret'),
       getJwtSetting(this.context)('jwt_refresh_token_expires')
@@ -58,12 +58,12 @@ export class JwtService {
     }
   }
 
-  public async verifyAccessToken(token: string) {
+  public verifyAccessToken = async (token: string) => {
     const secret = await getJwtSetting(this.context)('jwt_access_token_secret')
     return Jwt.verify(token, secret)
   }
 
-  public async verifyRefreshToken(refreshToken: string) {
+  public verifyRefreshToken = async (refreshToken: string) => {
     const secret = await getJwtSetting(this.context)('jwt_refresh_token_secret')
     return Jwt.verify(refreshToken, secret)
   }
