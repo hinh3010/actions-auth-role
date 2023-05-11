@@ -8,6 +8,8 @@ import { type IContext } from '@hellocacbantre/context'
 import { getStoreDb } from '../connections/mongo.db'
 import { getFalcol } from '../connections/redisio.db'
 import { JwtService } from '../services/jwt.service'
+import { getJwtSetting } from '../config'
+import { convertToSeconds } from '../utils/convertToSeconds'
 
 export class AuthRole {
   private readonly context: IContext
@@ -37,18 +39,23 @@ export class AuthRole {
         this.jwtService.generateRefreshToken({ _id })
       ])
 
+      const refreshTokenExpiresString = await getJwtSetting(this.context)(
+        'jwt_refresh_token_expires'
+      )
+      const refreshTokenExpiresSeconds = convertToSeconds(refreshTokenExpiresString)
+
       // add redis
       void falcol.set(`refreshToken:${_id}`, newRefreshToken as string)
-      void falcol.expire(`refreshToken:${_id}`, 2592000)
+      void falcol.expire(`refreshToken:${_id}`, refreshTokenExpiresSeconds)
 
       // add header
       res.set('Authorization', `Bearer ${newToken}`)
 
       // add cookies
-      res.cookie('token', newToken, { httpOnly: true, maxAge: 604800 * 1000 })
+      // res.cookie('token', newToken, { httpOnly: true, maxAge: 604800 * 1000 })
       res.cookie('refreshToken', newRefreshToken, {
         httpOnly: true,
-        maxAge: 2592000 * 1000
+        maxAge: refreshTokenExpiresSeconds * 1000
       })
 
       return true
@@ -95,24 +102,33 @@ export class AuthRole {
         if (!token) {
           return next(createError.Unauthorized())
         }
-        const decoded: any = await this.jwtService.verifyAccessToken(token)
 
-        const { getModel } = getStoreDb(this.context)
+        try {
+          const decoded: any = await this.jwtService.verifyAccessToken(token)
 
-        const User = getModel<IUser>('User')
-        const user = await User.findById(decoded._id).lean()
-        const { roles = [] } = user
+          const { getModel } = getStoreDb(this.context)
 
-        if (user.status !== 'active') {
-          return next(createError.Forbidden('Your account has not been activated'))
+          const User = getModel<IUser>('User')
+          const user = await User.findById(decoded._id).lean()
+          const { roles = [] } = user
+
+          if (user.status !== 'active') {
+            return next(createError.Forbidden('Your account has not been activated'))
+          }
+
+          if (!roles.includes(role)) {
+            return next(createError.Forbidden('You do not have permission'))
+          }
+          req.user = user
+
+          return next()
+        } catch (error: any) {
+          if (error.name === 'TokenExpiredError') {
+            const isSuccess = await this.refetchToken(req, res)
+            if (isSuccess) return next()
+            return next(createError.Unauthorized())
+          }
         }
-
-        if (!roles.includes(role)) {
-          return next(createError.Forbidden('You do not have permission'))
-        }
-        req.user = user
-
-        return next()
       }
       return next(createError.Unauthorized())
     }

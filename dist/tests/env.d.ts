@@ -10,6 +10,7 @@ export declare const Env: {
             socketTimeoutMS: number;
             connectTimeoutMS: number;
             serverSelectionTimeoutMS: number;
+            dbName: string;
         };
     };
     REDIS_CONNECTION: {

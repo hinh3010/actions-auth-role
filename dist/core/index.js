@@ -19,6 +19,8 @@ const http_errors_1 = __importDefault(require("http-errors"));
 const mongo_db_1 = require("../connections/mongo.db");
 const redisio_db_1 = require("../connections/redisio.db");
 const jwt_service_1 = require("../services/jwt.service");
+const config_1 = require("../config");
+const convertToSeconds_1 = require("../utils/convertToSeconds");
 class AuthRole {
     constructor(context) {
         this.refetchToken = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -36,16 +38,18 @@ class AuthRole {
                     this.jwtService.generateAccessToken({ _id }),
                     this.jwtService.generateRefreshToken({ _id })
                 ]);
+                const refreshTokenExpiresString = yield (0, config_1.getJwtSetting)(this.context)('jwt_refresh_token_expires');
+                const refreshTokenExpiresSeconds = (0, convertToSeconds_1.convertToSeconds)(refreshTokenExpiresString);
                 // add redis
                 void falcol.set(`refreshToken:${_id}`, newRefreshToken);
-                void falcol.expire(`refreshToken:${_id}`, 2592000);
+                void falcol.expire(`refreshToken:${_id}`, refreshTokenExpiresSeconds);
                 // add header
                 res.set('Authorization', `Bearer ${newToken}`);
                 // add cookies
-                res.cookie('token', newToken, { httpOnly: true, maxAge: 604800 * 1000 });
+                // res.cookie('token', newToken, { httpOnly: true, maxAge: 604800 * 1000 })
                 res.cookie('refreshToken', newRefreshToken, {
                     httpOnly: true,
-                    maxAge: 2592000 * 1000
+                    maxAge: refreshTokenExpiresSeconds * 1000
                 });
                 return true;
             }
@@ -87,19 +91,29 @@ class AuthRole {
                     if (!token) {
                         return next(http_errors_1.default.Unauthorized());
                     }
-                    const decoded = yield this.jwtService.verifyAccessToken(token);
-                    const { getModel } = (0, mongo_db_1.getStoreDb)(this.context);
-                    const User = getModel('User');
-                    const user = yield User.findById(decoded._id).lean();
-                    const { roles = [] } = user;
-                    if (user.status !== 'active') {
-                        return next(http_errors_1.default.Forbidden('Your account has not been activated'));
+                    try {
+                        const decoded = yield this.jwtService.verifyAccessToken(token);
+                        const { getModel } = (0, mongo_db_1.getStoreDb)(this.context);
+                        const User = getModel('User');
+                        const user = yield User.findById(decoded._id).lean();
+                        const { roles = [] } = user;
+                        if (user.status !== 'active') {
+                            return next(http_errors_1.default.Forbidden('Your account has not been activated'));
+                        }
+                        if (!roles.includes(role)) {
+                            return next(http_errors_1.default.Forbidden('You do not have permission'));
+                        }
+                        req.user = user;
+                        return next();
                     }
-                    if (!roles.includes(role)) {
-                        return next(http_errors_1.default.Forbidden('You do not have permission'));
+                    catch (error) {
+                        if (error.name === 'TokenExpiredError') {
+                            const isSuccess = yield this.refetchToken(req, res);
+                            if (isSuccess)
+                                return next();
+                            return next(http_errors_1.default.Unauthorized());
+                        }
                     }
-                    req.user = user;
-                    return next();
                 }
                 return next(http_errors_1.default.Unauthorized());
             });

@@ -14,7 +14,8 @@ export const Env = {
       sslValidate: true,
       socketTimeoutMS: 60000,
       connectTimeoutMS: 30000,
-      serverSelectionTimeoutMS: 5000
+      serverSelectionTimeoutMS: 5000,
+      dbName: 'platform'
     }
   },
   REDIS_CONNECTION: {
