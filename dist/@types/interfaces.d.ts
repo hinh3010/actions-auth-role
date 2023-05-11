@@ -1,6 +1,4 @@
 import { type Request } from 'express';
-import type Redis from 'ioredis';
-import { type Connection } from 'mongoose';
 export interface IError {
     status: number;
     message: string;
@@ -8,7 +6,14 @@ export interface IError {
 export interface ICustomRequest extends Request {
     user?: Record<string, any>;
 }
+export interface IMongoContext {
+    uri: string;
+    options: Record<string, any>;
+}
+export interface IRedisContext {
+    uri: string;
+}
 export interface IContext {
-    mongodb: Connection;
-    redisDb: Redis;
+    mongoDb: IMongoContext;
+    redisDb: IRedisContext;
 }

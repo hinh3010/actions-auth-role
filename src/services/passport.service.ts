@@ -7,19 +7,11 @@ import {
 } from 'passport-jwt'
 import { Strategy as LocalStrategy } from 'passport-local'
 
-import {
-  ACCOUNT_STATUS_TYPE,
-  ACCOUNT_TYPE,
-  createConnect,
-  type IUser
-} from '@hellocacbantre/db-schemas'
+import { ACCOUNT_STATUS_TYPE, ACCOUNT_TYPE, type IUser } from '@hellocacbantre/db-schemas'
 
 import { getJwtSetting } from '../config'
 import { type IContext } from '../@types'
-import { RedisIoClient } from '../tests/connections/redisio.db'
-import { platformDb } from '../tests/connections/mongo.db'
-
-export const { getModel, getConnection } = createConnect(platformDb)
+import { getStoreDb } from '../connections/mongo.db'
 
 export class PassportService {
   private readonly passport: PassportStatic
@@ -46,6 +38,8 @@ export class PassportService {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         async (email: string, password: string, done) => {
           try {
+            const { getModel } = getStoreDb(this.context)
+
             const User = getModel<IUser>('User')
 
             const user = await User.findOne({
@@ -94,6 +88,7 @@ export class PassportService {
     this.passport.use(
       new JwtStrategy(jwtOptions, async (payload: IPayload, done: JwtVerifiedCallback) => {
         try {
+          const { getModel } = getStoreDb(this.context)
           const User = getModel<IUser>('User')
 
           const user = await User.findById(payload._id)
@@ -194,9 +189,4 @@ export class PassportService {
   }
 }
 
-const context = {
-  mongodb: platformDb,
-  redisDb: RedisIoClient
-}
-
-export const passportService = new PassportService(context)
+// export const passportService = new PassportService(context)

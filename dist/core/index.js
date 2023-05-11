@@ -14,9 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthRole = void 0;
 const db_schemas_1 = require("@hellocacbantre/db-schemas");
-const redis_1 = require("@hellocacbantre/redis");
 const bluebird_1 = __importDefault(require("bluebird"));
 const http_errors_1 = __importDefault(require("http-errors"));
+const mongo_db_1 = require("../connections/mongo.db");
+const redisio_db_1 = require("../connections/redisio.db");
 const jwt_service_1 = require("../services/jwt.service");
 class AuthRole {
     constructor(context) {
@@ -25,8 +26,7 @@ class AuthRole {
                 const refreshToken = req.cookies.refreshToken;
                 const decodedRefreshToken = yield this.jwtService.verifyRefreshToken(refreshToken);
                 const { _id } = decodedRefreshToken;
-                const { redisDb } = this.context;
-                const falcol = new redis_1.SimpleFalcon(redisDb);
+                const falcol = (0, redisio_db_1.getFalcol)(this.context);
                 // Each refresh token can only be used once.
                 const refreshTokenRedis = yield falcol.get(`refreshToken:${_id}`);
                 if (refreshTokenRedis !== refreshToken)
@@ -62,8 +62,7 @@ class AuthRole {
                 }
                 try {
                     const decoded = yield this.jwtService.verifyAccessToken(token);
-                    const { mongodb } = this.context;
-                    const { getModel } = (0, db_schemas_1.createConnect)(mongodb);
+                    const { getModel } = (0, mongo_db_1.getStoreDb)(this.context);
                     const User = getModel('User');
                     const user = yield User.findById(decoded._id).lean();
                     req.user = user;
@@ -89,8 +88,7 @@ class AuthRole {
                         return next(http_errors_1.default.Unauthorized());
                     }
                     const decoded = yield this.jwtService.verifyAccessToken(token);
-                    const { mongodb } = this.context;
-                    const { getModel } = (0, db_schemas_1.createConnect)(mongodb);
+                    const { getModel } = (0, mongo_db_1.getStoreDb)(this.context);
                     const User = getModel('User');
                     const user = yield User.findById(decoded._id).lean();
                     const { roles = [] } = user;
@@ -114,8 +112,7 @@ class AuthRole {
                     return next(http_errors_1.default.Unauthorized());
                 }
                 const decoded = yield this.jwtService.verifyAccessToken(token);
-                const { mongodb } = this.context;
-                const { getModel } = (0, db_schemas_1.createConnect)(mongodb);
+                const { getModel } = (0, mongo_db_1.getStoreDb)(this.context);
                 const User = getModel('User');
                 const user = yield User.findById(decoded._id).lean();
                 req.user = user;
@@ -131,8 +128,7 @@ class AuthRole {
                     return next(http_errors_1.default.Unauthorized());
                 }
                 const decoded = yield this.jwtService.verifyAccessToken(token);
-                const { mongodb } = this.context;
-                const { getModel } = (0, db_schemas_1.createConnect)(mongodb);
+                const { getModel } = (0, mongo_db_1.getStoreDb)(this.context);
                 const User = getModel('User');
                 const user = yield User.findById(decoded._id).lean();
                 const { roles = [] } = user;
@@ -155,8 +151,7 @@ class AuthRole {
                     return next(http_errors_1.default.Unauthorized());
                 }
                 const decoded = yield this.jwtService.verifyAccessToken(token);
-                const { mongodb } = this.context;
-                const { getModel } = (0, db_schemas_1.createConnect)(mongodb);
+                const { getModel } = (0, mongo_db_1.getStoreDb)(this.context);
                 const User = getModel('User');
                 const user = yield User.findById(decoded._id).lean();
                 const { roles = [] } = user;

@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getJwtSetting = void 0;
-const redis_1 = require("@hellocacbantre/redis");
+const redisio_db_1 = require("../connections/redisio.db");
 const getJwtSetting = (context) => {
-    const falcol = new redis_1.SimpleFalcon(context.redisDb);
+    const falcol = (0, redisio_db_1.getFalcol)(context);
     return (key) => __awaiter(void 0, void 0, void 0, function* () {
         var _a;
         return (_a = (yield falcol.get(`global_setting:${key}`))) !== null && _a !== void 0 ? _a : '';

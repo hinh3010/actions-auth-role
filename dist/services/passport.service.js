@@ -11,17 +11,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.passportService = exports.PassportService = exports.getConnection = exports.getModel = void 0;
+exports.PassportService = void 0;
 const passport_1 = __importDefault(require("passport"));
 const passport_jwt_1 = require("passport-jwt");
 const passport_local_1 = require("passport-local");
 const db_schemas_1 = require("@hellocacbantre/db-schemas");
 const config_1 = require("../config");
-const redisio_db_1 = require("../tests/connections/redisio.db");
-const mongo_db_1 = require("../tests/connections/mongo.db");
-_a = (0, db_schemas_1.createConnect)(mongo_db_1.platformDb), exports.getModel = _a.getModel, exports.getConnection = _a.getConnection;
+const mongo_db_1 = require("../connections/mongo.db");
 class PassportService {
     constructor(context) {
         this.passport = passport_1.default;
@@ -40,7 +37,8 @@ class PassportService {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         (email, password, done) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const User = (0, exports.getModel)('User');
+                const { getModel } = (0, mongo_db_1.getStoreDb)(this.context);
+                const User = getModel('User');
                 const user = yield User.findOne({
                     email,
                     accountType: db_schemas_1.ACCOUNT_TYPE.Account
@@ -79,7 +77,8 @@ class PassportService {
             };
             this.passport.use(new passport_jwt_1.Strategy(jwtOptions, (payload, done) => __awaiter(this, void 0, void 0, function* () {
                 try {
-                    const User = (0, exports.getModel)('User');
+                    const { getModel } = (0, mongo_db_1.getStoreDb)(this.context);
+                    const User = getModel('User');
                     const user = yield User.findById(payload._id);
                     if (!user) {
                         done(null, false);
@@ -168,8 +167,4 @@ class PassportService {
     }
 }
 exports.PassportService = PassportService;
-const context = {
-    mongodb: mongo_db_1.platformDb,
-    redisDb: redisio_db_1.RedisIoClient
-};
-exports.passportService = new PassportService(context);
+// export const passportService = new PassportService(context)

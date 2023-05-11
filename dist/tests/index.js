@@ -5,12 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const __1 = require("..");
-const mongo_db_1 = require("./connections/mongo.db");
-const redisio_db_1 = require("./connections/redisio.db");
+const env_1 = require("./env");
 const app = (0, express_1.default)();
 const authRole = new __1.AuthRole({
-    mongodb: mongo_db_1.platformDb,
-    redisDb: redisio_db_1.RedisIoClient
+    mongoDb: {
+        uri: env_1.Env.MONGO_CONNECTION.URI,
+        options: env_1.Env.MONGO_CONNECTION.OPTIONS
+    },
+    redisDb: {
+        uri: env_1.Env.REDIS_CONNECTION.URI
+    }
 });
 const handlerError = (err, _, res, __) => {
     var _a;

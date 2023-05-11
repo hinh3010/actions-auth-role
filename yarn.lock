@@ -26,7 +26,7 @@
 
 "@hellocacbantre/db-schemas@hinh3010/packages-db-schemas":
   version "1.0.0"
-  resolved "git+ssh://git@github.com/hinh3010/packages-db-schemas.git#df854fa7deaf7ffcdd1447714a4ed0782efd9371"
+  resolved "git+ssh://git@github.com/hinh3010/packages-db-schemas.git#f03eee161d0a70711bc06ff730d1977bc511e722"
   dependencies:
     "@hellocacbantre/logger" hinh3010/packages-logger
     bcrypt "^5.1.0"

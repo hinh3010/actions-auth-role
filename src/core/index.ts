@@ -1,9 +1,10 @@
-import { ACCOUNT_ROLES_TYPE, createConnect, type IUser } from '@hellocacbantre/db-schemas'
-import { SimpleFalcon } from '@hellocacbantre/redis'
+import { ACCOUNT_ROLES_TYPE, type IUser } from '@hellocacbantre/db-schemas'
 import Bluebird from 'bluebird'
 import { type NextFunction, type Response } from 'express'
 import createError from 'http-errors'
 import { type IContext, type ICustomRequest } from '../@types'
+import { getStoreDb } from '../connections/mongo.db'
+import { getFalcol } from '../connections/redisio.db'
 import { JwtService } from '../services/jwt.service'
 
 export class AuthRole {
@@ -22,8 +23,7 @@ export class AuthRole {
       const decodedRefreshToken: any = await this.jwtService.verifyRefreshToken(refreshToken)
       const { _id } = decodedRefreshToken
 
-      const { redisDb } = this.context
-      const falcol = new SimpleFalcon(redisDb)
+      const falcol = getFalcol(this.context)
 
       // Each refresh token can only be used once.
       const refreshTokenRedis = await falcol.get(`refreshToken:${_id}`)
@@ -66,8 +66,7 @@ export class AuthRole {
       try {
         const decoded: any = await this.jwtService.verifyAccessToken(token)
 
-        const { mongodb } = this.context
-        const { getModel } = createConnect(mongodb)
+        const { getModel } = getStoreDb(this.context)
 
         const User = getModel<IUser>('User')
         const user = await User.findById(decoded._id).lean()
@@ -96,8 +95,7 @@ export class AuthRole {
         }
         const decoded: any = await this.jwtService.verifyAccessToken(token)
 
-        const { mongodb } = this.context
-        const { getModel } = createConnect(mongodb)
+        const { getModel } = getStoreDb(this.context)
 
         const User = getModel<IUser>('User')
         const user = await User.findById(decoded._id).lean()
@@ -127,8 +125,7 @@ export class AuthRole {
       }
       const decoded: any = await this.jwtService.verifyAccessToken(token)
 
-      const { mongodb } = this.context
-      const { getModel } = createConnect(mongodb)
+      const { getModel } = getStoreDb(this.context)
 
       const User = getModel<IUser>('User')
       const user = await User.findById(decoded._id).lean()
@@ -149,8 +146,7 @@ export class AuthRole {
       }
       const decoded: any = await this.jwtService.verifyAccessToken(token)
 
-      const { mongodb } = this.context
-      const { getModel } = createConnect(mongodb)
+      const { getModel } = getStoreDb(this.context)
 
       const User = getModel<IUser>('User')
       const user = await User.findById(decoded._id).lean()
@@ -181,8 +177,7 @@ export class AuthRole {
       }
       const decoded: any = await this.jwtService.verifyAccessToken(token)
 
-      const { mongodb } = this.context
-      const { getModel } = createConnect(mongodb)
+      const { getModel } = getStoreDb(this.context)
 
       const User = getModel<IUser>('User')
       const user = await User.findById(decoded._id).lean()

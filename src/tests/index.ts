@@ -1,13 +1,17 @@
 import express from 'express'
 import { AuthRole } from '..'
 import { type IError } from '../@types'
-import { platformDb } from './connections/mongo.db'
-import { RedisIoClient } from './connections/redisio.db'
+import { Env } from './env'
 
 const app = express()
 const authRole = new AuthRole({
-  mongodb: platformDb,
-  redisDb: RedisIoClient
+  mongoDb: {
+    uri: Env.MONGO_CONNECTION.URI,
+    options: Env.MONGO_CONNECTION.OPTIONS
+  },
+  redisDb: {
+    uri: Env.REDIS_CONNECTION.URI
+  }
 })
 
 const handlerError = (err: IError, _: any, res: any, __: any) => {
