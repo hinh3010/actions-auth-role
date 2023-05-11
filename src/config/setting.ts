@@ -1,5 +1,5 @@
 import { getFalcol } from '../connections/redisio.db'
-import { type IContext } from './../@types/interfaces'
+import { type IContext } from '@hellocacbantre/context'
 
 export const getJwtSetting = (context: IContext) => {
   const falcol = getFalcol(context)

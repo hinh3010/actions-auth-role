@@ -1,6 +1,6 @@
 import Jwt, { type JwtPayload } from 'jsonwebtoken';
 import { type ObjectId } from 'mongoose';
-import { type IContext } from '../@types';
+import { type IContext } from '@hellocacbantre/context';
 export interface IPayload extends JwtPayload {
     _id: ObjectId;
 }

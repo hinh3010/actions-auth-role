@@ -6,14 +6,3 @@ export interface IError {
 export interface ICustomRequest extends Request {
     user?: Record<string, any>;
 }
-export interface IMongoContext {
-    uri: string;
-    options: Record<string, any>;
-}
-export interface IRedisContext {
-    uri: string;
-}
-export interface IContext {
-    mongoDb: IMongoContext;
-    redisDb: IRedisContext;
-}

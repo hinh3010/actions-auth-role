@@ -20,6 +20,7 @@
     "release": "release-it --ci --verbose --no-increment"
   },
   "dependencies": {
+    "@hellocacbantre/context": "hinh3010/context",
     "@hellocacbantre/db-schemas": "hinh3010/packages-db-schemas",
     "@hellocacbantre/logger": "hinh3010/packages-logger",
     "@hellocacbantre/redis": "hinh3010/packages-redis",

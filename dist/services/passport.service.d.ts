@@ -1,4 +1,4 @@
-import { type IContext } from '../@types';
+import { type IContext } from '@hellocacbantre/context';
 export declare class PassportService {
     private readonly passport;
     private readonly context;

@@ -10,8 +10,8 @@ import { Strategy as LocalStrategy } from 'passport-local'
 import { ACCOUNT_STATUS_TYPE, ACCOUNT_TYPE, type IUser } from '@hellocacbantre/db-schemas'
 
 import { getJwtSetting } from '../config'
-import { type IContext } from '../@types'
 import { getStoreDb } from '../connections/mongo.db'
+import { type IContext } from '@hellocacbantre/context'
 
 export class PassportService {
   private readonly passport: PassportStatic

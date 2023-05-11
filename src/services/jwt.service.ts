@@ -2,7 +2,7 @@ import Bluebird from 'bluebird'
 import Jwt, { type JwtPayload, type SignOptions } from 'jsonwebtoken'
 import { type ObjectId } from 'mongoose'
 import { getJwtSetting } from './../config'
-import { type IContext } from '../@types'
+import { type IContext } from '@hellocacbantre/context'
 
 // import CryptoJS from 'crypto-js'
 // const privateKey = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex)

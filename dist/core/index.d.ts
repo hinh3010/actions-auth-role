@@ -1,6 +1,7 @@
 import { ACCOUNT_ROLES_TYPE } from '@hellocacbantre/db-schemas';
 import { type NextFunction, type Response } from 'express';
-import { type IContext, type ICustomRequest } from '../@types';
+import { type ICustomRequest } from '../@types';
+import { type IContext } from '@hellocacbantre/context';
 export declare class AuthRole {
     private readonly context;
     private readonly jwtService;
