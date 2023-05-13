@@ -7,13 +7,23 @@ import { type IContext } from '@hellocacbantre/context'
 
 import { getStoreDb } from '../connections/mongo.db'
 import { getFalcol } from '../connections/redisio.db'
-import { JwtService } from '../services/jwt.service'
+import { type IJwtService, JwtService } from '../services/jwt.service'
 import { getJwtSetting } from '../config'
 import { convertToSeconds } from '../utils/convertToSeconds'
 
-export class AuthRole {
+export interface IAuthRole {
+  isUser: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>
+  checkRole: (
+    role: ACCOUNT_ROLES_TYPE
+  ) => (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>
+  isUserActive: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>
+  isAdmin: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>
+  isSuperAdmin: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>
+}
+
+export class AuthRole implements IAuthRole {
   private readonly context: IContext
-  private readonly jwtService: JwtService
+  private readonly jwtService: IJwtService
 
   constructor(context: IContext) {
     this.context = context
