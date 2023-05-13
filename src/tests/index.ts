@@ -1,17 +1,16 @@
+import { ACCOUNT_ROLES_TYPE } from '@hellocacbantre/db-schemas'
 import express from 'express'
 import { AuthRole } from '..'
 import { type IError } from '../@types'
-import { Env } from './env'
-import { ACCOUNT_ROLES_TYPE } from '@hellocacbantre/db-schemas'
+import { RedisIoClient, platformDb } from './connect'
 
 const app = express()
 const authRole = new AuthRole({
   mongoDb: {
-    uri: Env.MONGO_CONNECTION.URI,
-    options: Env.MONGO_CONNECTION.OPTIONS
+    instance: platformDb
   },
   redisDb: {
-    uri: Env.REDIS_CONNECTION.URI
+    instance: RedisIoClient
   }
 })
 

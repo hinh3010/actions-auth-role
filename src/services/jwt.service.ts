@@ -13,14 +13,7 @@ export interface IPayload extends JwtPayload {
   _id: ObjectId
 }
 
-export interface IJwtService {
-  generateAccessToken: (payload: IPayload) => Promise<string | unknown>
-  generateRefreshToken: (payload: IPayload) => Promise<string | unknown>
-  verifyAccessToken: (token: string) => Promise<any>
-  verifyRefreshToken: (refreshToken: string) => Promise<any>
-}
-
-export class JwtService implements IJwtService {
+export class JwtService {
   private readonly context: IContext
 
   constructor(context: IContext) {

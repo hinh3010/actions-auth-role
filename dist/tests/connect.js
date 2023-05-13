@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.platformDb = exports.redlock = exports.falcol = exports.RedisIoClient = void 0;
+const db_schemas_1 = require("@hellocacbantre/db-schemas");
+const env_1 = require("./env");
+const redis_1 = require("@hellocacbantre/redis");
+exports.RedisIoClient = (0, redis_1.createConnect)(env_1.Env.REDIS_CONNECTION.URI);
+exports.falcol = new redis_1.SimpleFalcon(exports.RedisIoClient);
+exports.redlock = new redis_1.SimpleRedlock([exports.RedisIoClient]);
+const { URI, OPTIONS } = env_1.Env.MONGO_CONNECTION;
+exports.platformDb = (0, db_schemas_1.newConnection)(URI, Object.assign(Object.assign({}, OPTIONS), { dbName: 'platform' }));

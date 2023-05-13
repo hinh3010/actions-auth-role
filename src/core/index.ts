@@ -1,29 +1,19 @@
+import { type IContext } from '@hellocacbantre/context'
 import { ACCOUNT_ROLES_TYPE, type IUser } from '@hellocacbantre/db-schemas'
 import Bluebird from 'bluebird'
 import { type NextFunction, type Response } from 'express'
 import createError from 'http-errors'
 import { type ICustomRequest } from '../@types'
-import { type IContext } from '@hellocacbantre/context'
 
+import { getJwtSetting } from '../config'
 import { getStoreDb } from '../connections/mongo.db'
 import { getFalcol } from '../connections/redisio.db'
-import { type IJwtService, JwtService } from '../services/jwt.service'
-import { getJwtSetting } from '../config'
+import { JwtService } from '../services/jwt.service'
 import { convertToSeconds } from '../utils/convertToSeconds'
 
-export interface IAuthRole {
-  isUser: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>
-  checkRole: (
-    role: ACCOUNT_ROLES_TYPE
-  ) => (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>
-  isUserActive: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>
-  isAdmin: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>
-  isSuperAdmin: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>
-}
-
-export class AuthRole implements IAuthRole {
+export class AuthRole {
   private readonly context: IContext
-  private readonly jwtService: IJwtService
+  private readonly jwtService: JwtService
 
   constructor(context: IContext) {
     this.context = context

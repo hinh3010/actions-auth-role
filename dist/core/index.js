@@ -16,10 +16,10 @@ exports.AuthRole = void 0;
 const db_schemas_1 = require("@hellocacbantre/db-schemas");
 const bluebird_1 = __importDefault(require("bluebird"));
 const http_errors_1 = __importDefault(require("http-errors"));
+const config_1 = require("../config");
 const mongo_db_1 = require("../connections/mongo.db");
 const redisio_db_1 = require("../connections/redisio.db");
 const jwt_service_1 = require("../services/jwt.service");
-const config_1 = require("../config");
 const convertToSeconds_1 = require("../utils/convertToSeconds");
 class AuthRole {
     constructor(context) {

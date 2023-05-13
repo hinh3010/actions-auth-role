@@ -26,7 +26,7 @@
 
 "@hellocacbantre/context@hinh3010/context":
   version "1.0.0"
-  resolved "https://codeload.github.com/hinh3010/context/tar.gz/3b2320e37aaaddb4f27f03262754b6695b76ac14"
+  resolved "https://codeload.github.com/hinh3010/context/tar.gz/09306eb8346b17bf9c44456d41cf6a19e2d7620f"
 
 "@hellocacbantre/db-schemas@hinh3010/packages-db-schemas":
   version "1.0.0"

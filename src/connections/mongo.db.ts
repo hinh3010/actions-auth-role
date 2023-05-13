@@ -1,10 +1,7 @@
-import { type IStoreDB, createConnect, newConnection } from '@hellocacbantre/db-schemas'
 import { type IContext } from '@hellocacbantre/context'
-
-import { type Connection } from 'mongoose'
+import { createConnect, type IStoreDB } from '@hellocacbantre/db-schemas'
 
 export const getStoreDb = (context: IContext): IStoreDB => {
   const { mongoDb } = context
-  const db: Connection = newConnection(mongoDb.uri, mongoDb.options)
-  return createConnect(db)
+  return createConnect(mongoDb.instance)
 }

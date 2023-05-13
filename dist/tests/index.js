@@ -3,18 +3,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const db_schemas_1 = require("@hellocacbantre/db-schemas");
 const express_1 = __importDefault(require("express"));
 const __1 = require("..");
-const env_1 = require("./env");
-const db_schemas_1 = require("@hellocacbantre/db-schemas");
+const connect_1 = require("./connect");
 const app = (0, express_1.default)();
 const authRole = new __1.AuthRole({
     mongoDb: {
-        uri: env_1.Env.MONGO_CONNECTION.URI,
-        options: env_1.Env.MONGO_CONNECTION.OPTIONS
+        instance: connect_1.platformDb
     },
     redisDb: {
-        uri: env_1.Env.REDIS_CONNECTION.URI
+        instance: connect_1.RedisIoClient
     }
 });
 const handlerError = (err, _, res, __) => {
