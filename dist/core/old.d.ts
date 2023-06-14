@@ -6,10 +6,10 @@ export declare class AuthRole {
     private readonly context;
     private readonly jwtService;
     constructor(context: IContext);
-    private readonly isAuthorized;
-    isUser: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>;
+    isUser: (req: ICustomRequest, _: Response, next: NextFunction) => Promise<void>;
     isUserActive: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>;
     checkRole: (role: ACCOUNT_ROLES_TYPE) => (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>;
-    isSuperAdmin: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>;
+    refetchToken: (req: ICustomRequest, res: Response) => Promise<boolean>;
     isAdmin: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>;
+    isSuperAdmin: (req: ICustomRequest, res: Response, next: NextFunction) => Promise<void>;
 }
